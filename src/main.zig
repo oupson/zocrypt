@@ -49,11 +49,15 @@ pub fn main() !void {
     var file_key: [32]u8 = undefined;
     std.crypto.kdf.hkdf.HkdfSha256.expand(&file_key, "Key used for file encryption", key);
 
+    std.crypto.utils.secureZero(u8, key);
+
     if (command == .decrypt) {
         try crypto.decrypt(file_key, input.?, output.?);
     } else {
         try crypto.encrypt(file_key, input.?, output.?);
     }
+
+    std.crypto.utils.secureZero(u8, file_key);
 }
 
 fn getPassword(allocator: std.mem.Allocator) anyerror![]const u8 {
